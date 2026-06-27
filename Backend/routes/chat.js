@@ -1,6 +1,6 @@
 import express from "express";
 import Thread from "../models/Thread.js";
-import getOpenAIAPIResponse from "../utils/openai.js";
+import getGeminiResponse from "../utils/gemini.js";
 
 const router = express.Router();
 
@@ -36,7 +36,7 @@ router.get("/thread/:threadId", async(req, res) => {
     const {threadId} = req.params;
 
     try {
-        thread = await Thread.findOne({threadId});
+        const thread = await Thread.findOne({threadId});
 
         if(!thread) {
             res.status(404).json({error: "Thread not found"});
@@ -75,7 +75,7 @@ router.post("/chat", async(req, res) => {
     }
 
     try {
-        thread = await Thread.findOne({threadId});
+        let thread = await Thread.findOne({threadId});
 
         if(!thread) {
             //create a new thread in Db
@@ -88,7 +88,7 @@ router.post("/chat", async(req, res) => {
             thread.messages.push({role: "user", content: message});
         }
 
-        const assistantReply = await getOpenAIAPIResponse(message);
+        const assistantReply = await getGeminiResponse(message);
 
         thread.messages.push({role: "assistant", content: assistantReply});
         thread.updatedAt = new Date();

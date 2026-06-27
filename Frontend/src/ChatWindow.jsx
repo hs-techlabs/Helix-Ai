@@ -5,7 +5,7 @@ import { useContext, useState, useEffect } from "react";
 import {ScaleLoader} from "react-spinners";
 
 function ChatWindow() {
-    const {prompt, setPrompt, reply, setReply, currThreadId, setPrevChats, setNewChat} = useContext(MyContext);
+    const {prompt, setPrompt, reply, setReply, currThreadId, setPrevChats, setNewChat, allThreads, setAllThreads} = useContext(MyContext);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -30,6 +30,15 @@ function ChatWindow() {
             const res = await response.json();
             console.log(res);
             setReply(res.reply);
+
+            // Fetch updated thread list if this is a new thread
+            const threadExists = allThreads.some(t => t.threadId === currThreadId);
+            if (!threadExists) {
+                const threadsResponse = await fetch("http://127.0.0.1:8080/api/thread");
+                const threadsRes = await threadsResponse.json();
+                const filteredData = threadsRes.map(thread => ({threadId: thread.threadId, title: thread.title}));
+                setAllThreads(filteredData);
+            }
         } catch(err) {
             console.log(err);
         }
