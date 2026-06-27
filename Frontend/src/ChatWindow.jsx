@@ -14,6 +14,7 @@ function ChatWindow() {
         setNewChat(false);
 
         console.log("message ", prompt, " threadId ", currThreadId);
+        const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8080";
         const options = {
             method: "POST",
             headers: {
@@ -26,7 +27,7 @@ function ChatWindow() {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:8080/api/chat", options);
+            const response = await fetch(`${API_BASE}/api/chat`, options);
             const res = await response.json();
             console.log(res);
             setReply(res.reply);
@@ -34,7 +35,7 @@ function ChatWindow() {
             // Fetch updated thread list if this is a new thread
             const threadExists = allThreads.some(t => t.threadId === currThreadId);
             if (!threadExists) {
-                const threadsResponse = await fetch("http://127.0.0.1:8080/api/thread");
+                const threadsResponse = await fetch(`${API_BASE}/api/thread`);
                 const threadsRes = await threadsResponse.json();
                 const filteredData = threadsRes.map(thread => ({threadId: thread.threadId, title: thread.title}));
                 setAllThreads(filteredData);
