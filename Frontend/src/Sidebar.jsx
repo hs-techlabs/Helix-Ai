@@ -11,9 +11,12 @@ function Sidebar() {
         try {
             const response = await fetch(`${API_BASE}/api/thread`);
             const res = await response.json();
-            const filteredData = res.map(thread => ({threadId: thread.threadId, title: thread.title}));
-            //console.log(filteredData);
-            setAllThreads(filteredData);
+            if (Array.isArray(res)) {
+                const filteredData = res.map(thread => ({threadId: thread.threadId, title: thread.title}));
+                setAllThreads(filteredData);
+            } else {
+                console.error("Failed to fetch threads:", res.error || res);
+            }
         } catch(err) {
             console.log(err);
         }

@@ -37,8 +37,12 @@ function ChatWindow() {
             if (!threadExists) {
                 const threadsResponse = await fetch(`${API_BASE}/api/thread`);
                 const threadsRes = await threadsResponse.json();
-                const filteredData = threadsRes.map(thread => ({threadId: thread.threadId, title: thread.title}));
-                setAllThreads(filteredData);
+                if (Array.isArray(threadsRes)) {
+                    const filteredData = threadsRes.map(thread => ({threadId: thread.threadId, title: thread.title}));
+                    setAllThreads(filteredData);
+                } else {
+                    console.error("Failed to fetch threads:", threadsRes.error || threadsRes);
+                }
             }
         } catch(err) {
             console.log(err);
